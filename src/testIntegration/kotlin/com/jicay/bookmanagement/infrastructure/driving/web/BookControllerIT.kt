@@ -23,7 +23,7 @@ class BookControllerIT(
 
     test("rest route get books") {
         // GIVEN
-        every { bookUseCase.getAllBooks() } returns listOf(Book("A", "B"))
+        every { bookUseCase.getAllBooks() } returns listOf(Book(1, "A", "B", false))
 
         // WHEN
         mockMvc.get("/books")
@@ -37,8 +37,10 @@ class BookControllerIT(
                         """
                         [
                           {
+                            "id": 1,
                             "name": "A",
-                            "author": "B"
+                            "author": "B",
+                            "reserved": false
                           }
                         ]
                         """.trimIndent()
@@ -48,6 +50,7 @@ class BookControllerIT(
     }
 
     test("rest route post book") {
+        val book = Book(1, "Les misérables", "Victor Hugo", false)
         justRun { bookUseCase.addBook(any()) }
 
         mockMvc.post("/books") {
@@ -55,7 +58,8 @@ class BookControllerIT(
             content = """
                 {
                   "name": "Les misérables",
-                  "author": "Victor Hugo"
+                  "author": "Victor Hugo",
+                  "reserved": false
                 }
             """.trimIndent()
             contentType = APPLICATION_JSON
@@ -64,12 +68,8 @@ class BookControllerIT(
             status { isCreated() }
         }
 
-        val expected = Book(
-            name = "Les misérables",
-            author = "Victor Hugo"
-        )
 
-        verify(exactly = 1) { bookUseCase.addBook(expected) }
+        verify(exactly = 1) { bookUseCase.addBook(book) }
     }
 
     test("rest route post book should return 400 when body is not good") {
@@ -90,5 +90,18 @@ class BookControllerIT(
         }
 
         verify(exactly = 0) { bookUseCase.addBook(any()) }
+    }
+
+    test("rest route reserve book") {
+        justRun { bookUseCase.reserveBook(any()) }
+
+        mockMvc.post("/books/reserve/1") {
+            contentType = APPLICATION_JSON
+            accept = APPLICATION_JSON
+        }.andExpect {
+            status { isOk() }
+        }
+
+        verify(exactly = 1) { bookUseCase.reserveBook(1) }
     }
 })

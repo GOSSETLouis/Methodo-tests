@@ -36,11 +36,11 @@ class BookDAOIT(
             performQuery(
                 // language=sql
                 """
-               insert into book (title, author)
+               insert into book (title, author, reserved)
                values 
-                   ('Hamlet', 'Shakespeare'),
-                   ('Les fleurs du mal', 'Beaudelaire'),
-                   ('Harry Potter', 'Rowling');
+                   ('Hamlet', 'Shakespeare', false),
+                   ('Les fleurs du mal', 'Beaudelaire', false),
+                   ('Harry Potter', 'Rowling', false);
             """.trimIndent()
             )
 
@@ -49,14 +49,14 @@ class BookDAOIT(
 
             // THEN
             res.shouldContainExactlyInAnyOrder(
-                Book("Hamlet", "Shakespeare"), Book("Les fleurs du mal", "Beaudelaire"), Book("Harry Potter", "Rowling")
+                Book(1, "Hamlet", "Shakespeare", false), Book(2, "Les fleurs du mal", "Beaudelaire", false), Book(3, "Harry Potter", "Rowling", false)
             )
         }
 
         test("create book in db") {
             // GIVEN
             // WHEN
-            bookDAO.createBook(Book("Les misérables", "Victor Hugo"))
+            bookDAO.createBook(Book(1, "Les misérables", "Victor Hugo", false))
 
             // THEN
             val res = performQuery(
@@ -69,6 +69,35 @@ class BookDAOIT(
                 this["id"].shouldNotBeNull().shouldBeInstanceOf<Int>()
                 this["title"].shouldBe("Les misérables")
                 this["author"].shouldBe("Victor Hugo")
+            }
+        }
+
+        test("reserve book in db") {
+            // GIVEN
+            performQuery(
+                // language=sql
+                """
+               insert into book (title, author, reserved)
+               values
+                   ('Hamlet', 'Shakespeare', false);
+            """.trimIndent()
+            )
+
+            // WHEN
+            bookDAO.reserveBook(1)
+
+            // THEN
+            val res = performQuery(
+                // language=sql
+                "SELECT * from book WHERE id = 1"
+            )
+
+            res shouldHaveSize 1
+            assertSoftly(res.first()) {
+                this["id"].shouldNotBeNull().shouldBeInstanceOf<Int>()
+                this["title"].shouldBe("Hamlet")
+                this["author"].shouldBe("Shakespeare")
+                this["reserved"].shouldBe(true)
             }
         }
 
