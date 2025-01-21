@@ -50,7 +50,7 @@ class BookControllerIT(
     }
 
     test("rest route post book") {
-        val book = Book(1, "Les misérables", "Victor Hugo", false)
+        val book = Book(1, "Les Misérables", "Victor Hugo", false)
         justRun { bookUseCase.addBook(any()) }
 
         mockMvc.post("/books") {
@@ -58,7 +58,7 @@ class BookControllerIT(
             content = """
                 {
                   "id": 1,
-                  "name": "Les misérables",
+                  "name": "Les Misérables",
                   "author": "Victor Hugo",
                   "reserved": false
                 }
@@ -80,7 +80,7 @@ class BookControllerIT(
             // language=json
             content = """
                 {
-                  "title": "Les misérables",
+                  "title": "Les Misérables",
                   "author": "Victor Hugo"
                 }
             """.trimIndent()

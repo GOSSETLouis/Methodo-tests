@@ -56,7 +56,7 @@ class BookDAOIT(
         test("create book in db") {
             // GIVEN
             // WHEN
-            bookDAO.createBook(Book(1, "Les misérables", "Victor Hugo", false))
+            bookDAO.createBook(Book(1, "Les Misérables", "Victor Hugo", false))
 
             // THEN
             val res = performQuery(
@@ -67,7 +67,7 @@ class BookDAOIT(
             res shouldHaveSize 1
             assertSoftly(res.first()) {
                 this["id"].shouldNotBeNull().shouldBeInstanceOf<Int>()
-                this["title"].shouldBe("Les misérables")
+                this["title"].shouldBe("Les Misérables")
                 this["author"].shouldBe("Victor Hugo")
             }
         }

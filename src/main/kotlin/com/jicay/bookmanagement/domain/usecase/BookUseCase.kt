@@ -11,6 +11,10 @@ class BookUseCase(
             it.name.lowercase()
         }
     }
+    
+    fun getBookById(bookId: Long): Book {
+        return bookPort.getBookById(bookId)
+    }
 
     fun addBook(book: Book) {
         bookPort.createBook(book)

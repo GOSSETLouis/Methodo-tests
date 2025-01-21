@@ -26,6 +26,13 @@ class BookController(
     }
 
     @CrossOrigin
+    @GetMapping("/{bookId}")
+    fun getBookById(@PathVariable bookId: Long): BookDTO {
+        val book = bookUseCase.getBookById(bookId)
+        return book.toDto()
+    }
+
+    @CrossOrigin
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun addBook(@RequestBody bookDTO: BookDTO) {

@@ -11,8 +11,9 @@ import io.restassured.http.ContentType
 import io.restassured.path.json.JsonPath
 import io.restassured.response.ValidatableResponse
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.hamcrest.Matchers.`is`
 
-class BookStepDefs {
+class ReserveBookStepDefs {
     @LocalServerPort
     private var port: Int? = 0
 
@@ -22,7 +23,7 @@ class BookStepDefs {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
     }
 
-    @When("the user creates the book {string} written by {string}")
+    @When("the user creates the book {string} written by {string} with reserved status false")
     fun createBook(title: String, author: String) {
         given()
             .contentType(ContentType.JSON)
@@ -43,33 +44,29 @@ class BookStepDefs {
             .statusCode(201)
     }
 
-    @When("the user get all books")
-    fun getAllBooks() {
-        lastBookResult = given()
+    @When("the user reserves the book with id {int}")
+    fun reserveBookById(id: Int) {
+        given()
+            .contentType(ContentType.JSON)
+            .and()
+            .pathParam("id", id)
             .`when`()
-            .get("/books")
+            .post("/books/reserve/{id}")
             .then()
             .statusCode(200)
     }
 
-    @Then("the list should contains the following books in the same order")
-fun shouldHaveListOfBooks(payload: List<Map<String, Any>>) {
-    val expectedResponse = payload.joinToString(separator = ",", prefix = "[", postfix = "]") { line ->
-        """
-            ${
-                line.entries.joinToString(separator = ",", prefix = "{", postfix = "}") { (key, value) ->
-                    when (key) {
-                        "id" -> """"$key": ${value.toString().toInt()}""" // id traité comme Int
-                        "reserved" -> """"$key": ${value.toString().toBoolean()}""" // reserved traité comme Boolean
-                        "name" -> """"$key": "$value"""" // name traité comme String
-                        "author" -> """"$key": "$value"""" // author traité comme String
-                        else -> """"$key": "$value"""" // autres propriétés par défaut en String
-                    }
-                }
-            }
-        """.trimIndent()
-    }
-    lastBookResult.extract().body().jsonPath().prettify() shouldBe JsonPath(expectedResponse).prettify()
+    @Then("the book with id {int} should be reserved")
+fun getBookById(id: Int) {
+    lastBookResult = given()
+        .contentType(ContentType.JSON)
+        .and()
+        .pathParam("id", id)
+        .`when`()
+        .get("/books/{id}")
+        .then()
+        .statusCode(200)
+        .body("reserved", `is`(true)) // Vérification que la propriété "reserved" est bien à true
 }
 
     companion object {
