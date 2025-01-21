@@ -19,6 +19,16 @@ class InMemoryBookPort : BookPort {
         books.add(book)
     }
 
+    override fun getBookById(bookId: Long): Book {
+        return books.find { it.id == bookId } ?: throw IllegalArgumentException("Book not found")
+    }
+
+    override fun reserveBook(bookId: Long) {
+        val book = getBookById(bookId)
+        books.remove(book)
+        books.add(book.copy(reserved = true))
+    }
+
     fun clear() {
         books.clear()
     }
@@ -40,7 +50,7 @@ class BookUseCasePropertyTest : FunSpec({
             for (i in 1..nbItems) {
                 val title = arb.next()
                 titles.add(title)
-                bookUseCase.addBook(Book(title, "Victor Hugo"))
+                bookUseCase.addBook(Book(id = i.toLong(), name = title, author = "Victor Hugo", reserved = false))
             }
 
             val res = bookUseCase.getAllBooks()
