@@ -77,14 +77,14 @@ class BookDAOIT(
             performQuery(
                 // language=sql
                 """
-               insert into book (title, author, reserved)
+               insert into book (id, title, author, reserved)
                values
-                   ('Hamlet', 'Shakespeare', false);
+                   (1, 'Hamlet', 'Shakespeare', false);
             """.trimIndent()
             )
 
             // WHEN
-            bookDAO.reserveBook(1)
+            bookDAO.reserveBook(1L)
 
             // THEN
             val res = performQuery(

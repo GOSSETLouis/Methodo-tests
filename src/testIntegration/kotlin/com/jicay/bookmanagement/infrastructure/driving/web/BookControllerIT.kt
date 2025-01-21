@@ -57,6 +57,7 @@ class BookControllerIT(
             // language=json
             content = """
                 {
+                  "id": 1,
                   "name": "Les misérables",
                   "author": "Victor Hugo",
                   "reserved": false
