@@ -26,8 +26,8 @@ class BookUseCaseTest : FunSpec({
         val res = bookUseCase.getAllBooks()
 
         res.shouldContainExactly(
-            Book(1, "Hamlet", "William Shakespeare", reserved = false),
-            Book(2, "Les Misérables", "Victor Hugo", reserved = false)
+            Book(2, "Hamlet", "William Shakespeare", reserved = false),
+            Book(1, "Les Misérables", "Victor Hugo", reserved = false)
         )
     }
 
